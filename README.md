@@ -3,11 +3,11 @@
 ### June 30, 2023
 ## Project description with goals
 ### Description
-* We want to be able to predict 
+* We want to be able to predict the coding langage used in the repository 
 
 ### Goals¶
 * Construct a ML model that predicts 
-* Find key drivers of 
+* Find key indicatorts of coding language 
 * Deliver a report to the data science team 
 * Deliver a presentation of findings to a general audience
 ## Initial hypotheses and/or questions you have of the data, ideas
@@ -18,7 +18,7 @@ There should be some combination of features that can be used to build a predict
 * 4. 
 *****************************************
 ## Project Plan 
-* Data acquired from 
+* Data acquired from GitHub
     * 
     * 
 * Prepare data

@@ -43,7 +43,11 @@ There should be some combination of features that can be used to build a predict
 * Draw conclusions
 
 ## Data Dictionary
-
+| Feature | Datatype | Key | Definition |
+|---|---|---|---|
+| repo | object | unique | Name of GitHub directory |
+| language | object | unique | Programming language used |
+| readme_contents | object | unique  | contents of the readme file  |
 
 ## Steps to Reproduce
 * 1. Data is collected from 

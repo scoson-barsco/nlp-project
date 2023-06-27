@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 
 ####################### Imports ############################
 
-def get_git():
+
     
     
 def split_data(df):

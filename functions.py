@@ -39,7 +39,6 @@ from sklearn.metrics import classification_report, confusion_matrix, plot_confus
 
 ## local
 import wrangle
-import env
 import acquire
 
 ###### VISUALIZATIONS ########

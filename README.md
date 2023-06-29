@@ -22,22 +22,19 @@ There should be some combination of features that can be used to build a predict
     * 
     * 
 * Prepare data
-    * Change column names to remove spaces
-    * 
-    * 
-    * 
-    * 
-    * 
+    * Took value_counts() of each language. Limited dataset to six most popular languages.
+    * Removed rows with nulls in language columns, since language is our target variable.
+    * Processed text in readme_contents to clean, tokenize, lemmatize, and remove stopwords from text.
+    * Found top 20 words in each language prior to split, and removed all other words.
     * Outliers were not addressed in this itteration
     * Split data into **train**, **validate**, **test**       
 ## Explore data in search of drivers of 
 * Answer the following initial questions
-    * 1. 
-    * 2. 
-    * 3. 
-    * 4. 
-    * 5. 
-* Develop a model to predict 
+    * 1. Are there any key words that are used more often in certain languages?
+    * 2. Is the length (word count) of the readme file related to the programing language used?
+    * 3. Could the top 15 bigrams be used to predict language?
+    * 4. Could the top 25 trigrams be used to predict language?
+* Develop a model to predict programing lanuage used in the Github repository
     * Run the models 
     * Select best model
 * Draw conclusions

@@ -139,21 +139,21 @@ def get_bigram_bubble():
     # Sort the bigram frequencies in descending order
     sorted_bigrams = sorted(bigram_freq.items(), key=lambda x: x[1], reverse=True)
     
-    # Select the top 15 bigrams
-    top_15_bigrams = sorted_bigrams[:15]
+    # Select the top 8 bigrams
+    top_8_bigrams = sorted_bigrams[:8]
     
-    # Create a DataFrame for the top 15 bigrams
-    df_top_15_bigrams = pd.DataFrame(top_15_bigrams, columns=['Bigram', 'Frequency'])
+    # Create a DataFrame for the top 8 bigrams
+    df_top_8_bigrams = pd.DataFrame(top_8_bigrams, columns=['Bigram', 'Frequency'])
     
     # Create the bubble chart using Plotly Express
-    fig = px.scatter(df_top_15_bigrams, x= df_top_15_bigrams.index, y='Frequency', size='Frequency', hover_data=[df_top_15_bigrams.index],
+    fig = px.scatter(df_top_8_bigrams, x= df_top_8_bigrams.index, y='Frequency', size='Frequency', hover_data=[df_top_8_bigrams.index],
                      hover_name='Bigram',text='Bigram',template='plotly_white', color='Frequency', size_max=45,
-                     labels={'Frequency': 'Frequency', 'Bigram': 'Bigram'}, title='Top 15 Bigram Frequency',
+                     labels={'Frequency': 'Frequency', 'Bigram': 'Bigram'}, title='Top 8 Bigram Frequency',
                      color_continuous_scale=px.colors.sequential.Sunsetdark)
     fig.update_layout(height=800)  # Adjust the height of the figure
     fig.update_layout(width=1200)  # Adjust the height of the figure
-    
-    fig.update_traces(textposition='top center', text=df_top_15_bigrams['Bigram'])  # Add labels to the bubbles
+    fig.update_xaxes(title='Bigram ID')
+    fig.update_traces(textposition='top center', text=df_top_8_bigrams['Bigram'])  # Add labels to the bubbles
     
     fig.show()
     

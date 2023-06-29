@@ -15,7 +15,8 @@ import os
 # Data viz:
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+import plotly.express as px
+from wordcloud import WordCloud
 
 # Sklearn stuff:
 import sklearn
@@ -25,7 +26,8 @@ from sklearn.cluster import KMeans
 
 from sklearn.model_selection import train_test_split
 
-## Regression Models
+## Stats
+from scipy.stats import kruskal
 
 ## Classification Models
 from sklearn.neighbors import KNeighborsClassifier
@@ -36,6 +38,16 @@ from sklearn.model_selection import RandomizedSearchCV
 from sklearn.ensemble import GradientBoostingClassifier
 
 from sklearn.metrics import classification_report, confusion_matrix, plot_confusion_matrix
+
+# nltk
+import nltk
+from nltk.tokenize.toktok import ToktokTokenizer
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+
+from nltk.corpus import stopwords
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
 
 ## local
 import wrangle
@@ -94,9 +106,131 @@ def visualize_repos(train):
     plt.tight_layout()
     plt.show()
 
+def get_length_viz():
+    '''
+    this function brings in a bar plot comparing avg. word count and programming language
+    '''
+    # Bar plot
+    plt.figure(figsize=(10, 6))
+    sns.barplot(data=acquire.wrangle_git(), x='language', y='word_count')
+    plt.xlabel('Programming Language')
+    plt.ylabel('Mean Word Count')
+    plt.title('Mean Word Count by Programming Language')
+    plt.show()
+    
+    
+def get_bigram_bubble():
+    '''
+    this function brings in a bubble plot for bigrams
+    '''
+    indf = acquire.wrangle_git()
+    # Tokenize the text into words
+    reads = ' '.join(indf['clean_lem'])
+    tokens = nltk.word_tokenize(reads)
 
+    # Generate word-level bigrams
+    bigrams = list(nltk.bigrams(tokens))
+
+    # Calculate the frequency of bigrams
+    bigram_freq = nltk.FreqDist(bigrams)
+
+    # Create a DataFrame from the bigram frequencies
+    df_bigrams = pd.DataFrame(list(bigram_freq.items()), columns=['Bigram', 'Frequency'])
+    # Sort the bigram frequencies in descending order
+    sorted_bigrams = sorted(bigram_freq.items(), key=lambda x: x[1], reverse=True)
+    
+    # Select the top 15 bigrams
+    top_15_bigrams = sorted_bigrams[:15]
+    
+    # Create a DataFrame for the top 15 bigrams
+    df_top_15_bigrams = pd.DataFrame(top_15_bigrams, columns=['Bigram', 'Frequency'])
+    
+    # Create the bubble chart using Plotly Express
+    fig = px.scatter(df_top_15_bigrams, x= df_top_15_bigrams.index, y='Frequency', size='Frequency', hover_data=[df_top_15_bigrams.index],
+                     hover_name='Bigram',text='Bigram',template='plotly_white', color='Frequency', size_max=45,
+                     labels={'Frequency': 'Frequency', 'Bigram': 'Bigram'}, title='Top 15 Bigram Frequency',
+                     color_continuous_scale=px.colors.sequential.Sunsetdark)
+    fig.update_layout(height=800)  # Adjust the height of the figure
+    fig.update_layout(width=1200)  # Adjust the height of the figure
+    
+    fig.update_traces(textposition='top center', text=df_top_15_bigrams['Bigram'])  # Add labels to the bubbles
+    
+    fig.show()
+    
+
+
+def get_trigram_cloud():
+    '''
+    this function brings in a word cloud for trigrams
+    '''
+    indf = acquire.wrangle_git()
+    # Tokenize the text into words
+    reads = ' '.join(indf['clean_lem'])  # Assuming 'indf' is defined somewhere
+
+    tokens = nltk.word_tokenize(reads)
+
+    # Generate word-level trigrams
+    trigrams = list(nltk.trigrams(tokens))
+
+    # Calculate the frequency of trigrams
+    trigram_freq = nltk.FreqDist(trigrams)
+
+    # Sort the trigram frequencies in descending order
+    sorted_trigrams = sorted(trigram_freq.items(), key=lambda x: x[1], reverse=True)
+
+    # Select the top 25 trigrams
+    top_25_trigrams = sorted_trigrams[:25]
+
+    # Create a dictionary for the top 25 trigrams
+    data = {f'{k[0]}_{k[1]}_{k[2]}': v for k, v in top_25_trigrams}
+
+    # Generate the word cloud from trigram frequencies
+    img = WordCloud(background_color='white', width=1200, height=400).generate_from_frequencies(data)
+
+    # Display the word cloud
+    plt.figure(figsize=(12, 4))
+    plt.imshow(img)
+    plt.axis('off')
+    plt.show()
+    
 ###### STATS ########
 
+
+
+def word_count_comparison(indf, language_column, word_count_column):
+    '''
+    Perform Kruskal-Wallis H test to compare word counts across different programming languages.
+    
+    Parameters:
+        indf (DataFrame): Input DataFrame containing the data.
+        language_column (str): Name of the column containing the programming languages.
+        word_count_column (str): Name of the column containing the word counts.
+        
+    Returns:
+        tuple: Tuple containing the test statistic and p-value.
+    '''
+    group1='language'
+    group2='word_count'
+    alpha = .05
+    indf= acquire.wrangle_git()
+    groups = []
+    for language in indf[language_column].unique():
+        group = indf[indf[language_column] == language][word_count_column]
+        groups.append(group)
+    
+    # Perform Kruskal-Wallis H test
+    statistic, p_value = kruskal(*groups)
+    
+    print("Kruskal-Wallis H Test Statistic:", statistic)
+    print("p-value:", p_value)
+    # Evaluate results
+    if p_value < alpha:
+        print(f'Since the p-value is less than alpha, there exists some relationship between {group1} and the {group2}.\n Therefore, we reject the Ho')
+    else:
+        print(f'Since the p-value is less than alpha, there is not a significant relationship between {group1} and {group2}.\n Therefore, we fail to reject the Ho')
+
+
+    return statistic, p_value
 
 
 

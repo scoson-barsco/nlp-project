@@ -15,8 +15,6 @@ from nltk.corpus import stopwords
 
 ####################### Imports ############################
     
-
-    
 def basic_clean(string):
     lower_string = string.lower()
     

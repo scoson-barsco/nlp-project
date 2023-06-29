@@ -6,6 +6,7 @@ After doing so, run it like this:
     python acquire.py
 To create the `data.json` file that contains the data.
 """
+
 import os
 import json
 from typing import Dict, List, Optional, Union, cast
@@ -926,6 +927,7 @@ def process_repo(repo: str) -> Dict[str, str]:
     dictionary with the language of the repo and the readme contents.
     """
     contents = get_repo_contents(repo)
+    print(repo)
     readme_contents = requests.get(get_readme_download_url(contents)).text
     return {
         "repo": repo,

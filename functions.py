@@ -103,7 +103,6 @@ def visualize_repos(train):
 
 
 
-####### Clustering #########
 
 
 
@@ -214,4 +213,22 @@ def random_forest_scores(X_bow, y_train, X_validate_bow, y_validate):
     plt.legend()
     plt.show()
     return df
+
+
+
+############### Initial explore  ###################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

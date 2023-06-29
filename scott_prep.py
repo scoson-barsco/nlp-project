@@ -1,6 +1,7 @@
 import unicodedata
 import re
 import json
+import numpy as np
 
 import nltk
 from nltk.tokenize.toktok import ToktokTokenizer
@@ -66,26 +67,74 @@ def remove_stopwords(text, extra_words=[], exclude_words=[]):
         stopword_list.remove(word)
     return ' '.join([word for word in text.split() if word not in stopword_list])
 
+
+
+def clean(text):
+    '''
+    A simple function to cleanup text data.
+    
+    Args:
+        text (str): The text to be cleaned.
+        
+    Returns:
+        list: A list of lemmatized words after cleaning.
+    '''
+    ADDITIONAL_STOPWORDS = ['azure','http','com','github','microsoft']
+    # basic_clean() function from last lesson:
+    # Normalize text by removing diacritics, encoding to ASCII, decoding to UTF-8, and converting to lowercase
+    text = (unicodedata.normalize('NFKD', text)
+             .encode('ascii', 'ignore')
+             .decode('utf-8', 'ignore')
+             .lower())
+    
+    # Remove punctuation, split text into words
+    words = re.sub(r'[^\w\s]', '', text).split()
+    
+    
+    # lemmatize() function from last lesson:
+    # Initialize WordNet lemmatizer
+    wnl = nltk.stem.WordNetLemmatizer()
+    
+    # Combine standard English stopwords with additional stopwords
+    stopwords = nltk.corpus.stopwords.words('english') + ADDITIONAL_STOPWORDS
+    
+    # Lemmatize words and remove stopwords
+    cleaned_words = [wnl.lemmatize(word) for word in words if word not in stopwords]
+    
+    return cleaned_words
+
 ############## Wrangle  ###########################
+
+def join_words(text):
+    '''
+    used by wrangle_git to join cleaned column
+    '''
+    return ' '.join(text)
+
 def wrangle_git():
+    '''
+    this function wrangles the github.csv for use in initial exploration
+    it applies general data cleanup principles 
+    '''
     git_df = pd.read_csv('github.csv',index_col=0)
     git_df = pd.DataFrame(git_df)
+
+    # remove unwanted languages
+    l = ['C#', 'PowerShell', 'Go', 'TypeScript', 'Python', 'JavaScript']
+    git_df.language = np.where(git_df.language.isin(l), git_df.language, np.nan)
+    # drop nulls
+    git_df = git_df.dropna()
+    #clean and lemmatize
     git_df['clean'] = git_df['readme_contents'].apply(basic_clean).apply(tokenize).apply(lambda x: ' '.join(x))
-    #stemmer = PorterStemmer()
-    #git_df['stemmed'] = git_df['clean'].apply(tokenize).apply(lambda x: [stemmer.stem(word) for word in x]).apply(lambda x: ' '.join(x))
     lemmatizer = WordNetLemmatizer()
     git_df['lemmatized'] = git_df['clean'].apply(tokenize).apply(lambda x: [lemmatizer.lemmatize(word) for word in x]).apply(lambda x: ' '.join(x))
+    # applies clean function and adds column
+    git_df['clean_lem']= (git_df.lemmatized.apply(clean))
+    git_df.clean_lem = git_df.clean_lem.apply(lambda x : join_words(x))
+    git_df['word_count'] = git_df['clean_lem'].apply(lambda x: len(x.split()))
     return git_df
 
 
-def wrangle_news():
-    news_df = acquire.get_news_articles()
-    news_df = pd.DataFrame(news_df)
-    #news_df = news_df.rename(columns={'content': 'original'})
-    #news_df['clean'] = news_df['original'].apply(basic_clean).apply(tokenize).apply(lambda x: ' '.join(x))
-    #stemmer = PorterStemmer()
-    #news_df['stemmed'] = news_df['clean'].apply(tokenize).apply(lambda x: [stemmer.stem(word) for word in x]).apply(lambda x: ' '.join(x))
-    lemmatizer = WordNetLemmatizer()
-    news_df['lemmatized'] = news_df['clean'].apply(tokenize).apply(lambda x: [lemmatizer.lemmatize(word) for word in x]).apply(lambda x: ' '.join(x))
-    return news_df
+
+
 
